@@ -27,7 +27,7 @@ typedef struct		timestamp
 	double			total_in_sec;
 }					timecode;
 
-typedef struct	list
+typedef struct		list
 {
 	char			*timestamp_start;
 	char			*timestamp_end;
@@ -42,6 +42,7 @@ typedef struct	list
 
 int					exit_on_error(void);
 void				trim_user_input(char *str);
+char				*create_file_name(char *str);
 
 /*
 ** HANDLE TIME STAMPS
@@ -49,8 +50,8 @@ void				trim_user_input(char *str);
 
 void				update_stamps_start(list *lst, timecode user_convert);
 void				update_stamps_end(list *lst, timecode user_convert);
-double				handle_input(list *lst, double user_input);
-void				split_time(list *lst, double user_input);
+void				handle_input(list *lst, double user_input);
+void				split_time(list *lst, double *user_input, FILE *fp);
 
 /*
 ** LIST FUNCTIONS
@@ -58,7 +59,16 @@ void				split_time(list *lst, double user_input);
 
 list				*create_node(const char *src);
 void				save_token(const char *src, list **lst);
-void				print(list *elem, double empty);
-void				iterate_list(list *lst, void (*funcptr)(list *, double), double user_input);
+void				print(list *elem, double *nb_lines, FILE *fp);
+void				iterate_list(list *lst, void (*funcptr)(list *, double *, FILE *fp),
+								double *user_input, FILE *fp);
+void 				free_list_str(list *lst);
 
+/*
+** CORE_FUNCTIONS
+*/
+
+void				get_file(int *fd, char **tmp_str, char **to_write, char **rest);
+char				*parser(list **lst, char *rest, double user_input, FILE **fp);
+void				write_subtitles(char *corrected_input, char *to_write, char *str);
 #endif

@@ -8,7 +8,8 @@ list *create_node(const char *src)
 	
 	if(!(new = malloc(sizeof(list))))
 		return (NULL);
-	new->whole = strdup(src);
+	if (!(new->whole = strdup(src)))
+		return (NULL);
 	token = strtok(new->whole, " ");
 	strtok(NULL, " ");
 	token2 = strtok(NULL, " ");
@@ -34,20 +35,35 @@ void save_token(const char *src, list **lst)
 }
 
 
-void print(list *elem, double empty)
+void print(list *elem, double *nb_lines, FILE *fp)
 {
-	nb_lines++;
-	(void)empty;
+	(*nb_lines)++;
 	fprintf(fp, "%.2d:%.2d:%06.3f --> ", elem->stamp[0].heures, elem->stamp[0].minutes, elem->stamp[0].secondes);
 	fprintf(fp, "%.2d:%.2d:%06.3f\n", elem->stamp[1].heures, elem->stamp[1].minutes, elem->stamp[1].secondes);
 
 }
 
-void iterate_list(list *lst, void (*funcptr)(list *, double), double user_input)
+void iterate_list(list *lst, void (*funcptr)(list *, double *, FILE *), double *user_input, FILE *fp)
 {
 	while (lst)
 	{
-		funcptr(lst, user_input);
+		funcptr(lst, user_input, fp);
 		lst = lst->next;
+	}
+}
+
+void free_list_str(list *lst)
+{
+	list *tmp;
+
+	tmp = lst;
+	while (lst)
+	{
+		free(lst->whole);
+		free(lst->timestamp_end);
+		free(lst->timestamp_start);
+		tmp = lst->next;
+		free(lst);
+		lst = tmp;
 	}
 }
